@@ -1,6 +1,6 @@
 import streamlit as st
-from services.sheets_service import store_response
 from services.gemini_service import analyze_response
+from datetime import datetime
 
 st.set_page_config(page_title="Skrining SMDS-27", page_icon="icon.jpg", layout="wide")
 
@@ -61,6 +61,8 @@ def render_profile_form():
                 st.rerun()
             else:
                 st.error("Mohon isi semua kolom.")
+
+# ... (render_questionnaire is already translated) ...
 
 def render_results():
     st.header("Langkah 3: Hasil Analisis")
@@ -165,22 +167,48 @@ def render_results():
     st.header("Langkah 3: Hasil Analisis")
     
     with st.spinner("Menganalisis jawaban Anda..."):
-        # 1. Store Data
-        if 'stored' not in st.session_state:
-            success = store_response(st.session_state.profile, st.session_state.responses)
-            if success:
-                st.success("Data berhasil disimpan.")
-            else:
-                st.warning("Gagal menyimpan data (periksa konfigurasi secrets). Melanjutkan analisis...")
-            st.session_state.stored = True
-            
-        # 2. Analyze with Gemini
+        # Analyze with Gemini
         if 'analysis' not in st.session_state:
             analysis = analyze_response(st.session_state.profile, st.session_state.responses)
             st.session_state.analysis = analysis
             
         st.markdown(st.session_state.analysis)
-        
+    
+    # Prepare download content
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    total_score = sum(st.session_state.responses.values())
+    
+    download_content = f"""HASIL SKRINING SMDS-27
+{'='*50}
+
+Tanggal Asesmen: {timestamp}
+
+PROFIL PENGGUNA:
+- Nama Alias: {st.session_state.profile.get('alias')}
+- Usia: {st.session_state.profile.get('age')}
+- Jenis Kelamin: {st.session_state.profile.get('gender')}
+- Pekerjaan: {st.session_state.profile.get('occupation')}
+
+HASIL ASESMEN:
+- Skor Total: {total_score} (Rentang: 27-135)
+
+JAWABAN KUESIONER:
+"""
+    
+    for i in range(1, 28):
+        download_content += f"Q{i}: {st.session_state.responses.get(f'Q{i}', 'N/A')}\n"
+    
+    download_content += f"\n{'='*50}\nANALISIS:\n{'='*50}\n\n"
+    download_content += st.session_state.analysis
+    
+    # Download button
+    st.download_button(
+        label="📥 Download Hasil Asesmen (TXT)",
+        data=download_content,
+        file_name=f"SMDS27_Hasil_{st.session_state.profile.get('alias')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+        mime="text/plain"
+    )
+    
     if st.button("Mulai Ulang"):
         st.session_state.clear()
         st.rerun()
