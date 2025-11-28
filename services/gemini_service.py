@@ -58,17 +58,20 @@ def analyze_response(profile_data, responses):
     5. **SITASI DENGAN URL VALID**:
        - WAJIB sertakan bagian "Referensi" di akhir analisis
        - Untuk SETIAP artikel yang Anda kutip, tuliskan:
-         * Judul lengkap artikel
-         * Nama penulis dan tahun
-         * URL lengkap yang dapat diklik (jika ada dan sudah dipastikan valid dan benar tersedia keberadaannya)
-       - Format: [Judul Artikel] - Penulis, Tahun, [Link URL]
+         * Nama Penulis
+         * Tahun 
+         * Judul Artikel
+         * Vol. / No. Artikel 
+         * Jurnal (jurnal ilmiah yang mempublikasi/mengindex artikel ilmiah) 
+         * Pages (jika tersedia jumlah halaman artikel ilmiah)
+       - Format: penulisan sitasi dengan format APA
        - PERINGATAN KERAS: PASTIKAN artikel ilmiah valid dan dapat diverifikasi pada pencarian google search keberadaannya (lakukan double check).
     
     6. **Bahasa**: Gunakan Bahasa Indonesia formal namun mudah dipahami.
     
     **Format Output:**
     - Gunakan Markdown
-    - Struktur: Ringkasan Skor → Analisis → Saran Terpersonalisasi → Langkah Konkret → Referensi (artikel ilmiah yang dirujuk dengan menyertakan link URL yang valid)
+    - Struktur: **Ringkasan Skor** → **Analisis** → **Saran Terpersonalisasi** → **Langkah Konkret** → **Referensi** (artikel ilmiah yang dirujuk dengan format APA)
     """
     
     try:
