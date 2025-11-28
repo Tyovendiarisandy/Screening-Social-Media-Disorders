@@ -63,13 +63,13 @@ def analyze_response(profile_data, responses):
          * URL lengkap yang dapat diklik (harus berupa link NYATA dari hasil pencarian)
        - Format: [Judul Artikel](URL_lengkap) - Penulis, Tahun
        - Minimal 3-5 referensi dengan URL valid
-       - PASTIKAN URL adalah link asli dari artikel yang Anda temukan, BUKAN URL yang Anda buat sendiri
+       - PERINGATAN KERAS: PASTIKAN URL adalah link asli dari artikel yang Anda temukan, BUKAN URL yang Anda buat sendiri
     
     6. **Bahasa**: Gunakan Bahasa Indonesia formal namun mudah dipahami.
     
     **Format Output:**
     - Gunakan Markdown
-    - Struktur: Ringkasan Skor → Analisis → Saran → Langkah Konkret → Referensi (dengan URL valid)
+    - Struktur: Ringkasan Skor → Analisis + Cek Artikel Ilmiah Pendukung → Saran Terpersonalisasi → Langkah Konkret → Referensi (dengan URL valid bisa diakses dan sesuai artikel ilmiah yang dirujuk)
     """
     
     try:
@@ -91,10 +91,14 @@ Anda tidak boleh memberikan saran yang mengarah kepada tindakan kriminal atau me
         
         config = types.GenerateContentConfig(
             tools=tools,
-            system_instruction=system_instruction
+            system_instruction=system_instruction,
+            thinking_config=types.ThinkingConfig(
+                thinking_budget=-1  # Unlimited thinking budget for thorough analysis
+            ),
+            media_resolution="MEDIA_RESOLUTION_HIGH"
         )
         
-        # Using gemini-2.5-flash as the stable preview model for this SDK
+        # Using gemini-2.5-flash-exp as the stable preview model for this SDK
         response = client.models.generate_content(
             model="gemini-2.5-flash", 
             contents=prompt,
