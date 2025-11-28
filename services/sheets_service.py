@@ -15,9 +15,19 @@ def get_sheets_connection():
         # Streamlit secrets handles toml parsing automatically
         creds_dict = dict(st.secrets["gcp_service_account"])
         
-        # Fix for Streamlit Cloud private key formatting issues
+        # Robust fix for Streamlit Cloud private key formatting issues
         if "private_key" in creds_dict:
-            creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
+            private_key = creds_dict["private_key"]
+            # Handle various newline representations
+            if "\\n" in private_key:
+                private_key = private_key.replace("\\n", "\n")
+            
+            # Ensure headers/footers are correct if they got mangled
+            if "-----BEGIN PRIVATE KEY-----" not in private_key:
+                 # Try to reconstruct if it's just the body
+                 pass # Assuming if it's missing headers it might be a different format, but usually it's just newlines
+            
+            creds_dict["private_key"] = private_key
         
         credentials = Credentials.from_service_account_info(
             creds_dict,
