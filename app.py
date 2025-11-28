@@ -10,8 +10,8 @@ def main():
     
     st.title("🧠 Skrining Skala Gangguan Media Sosial (SMDS-27)")
     st.markdown("""
-    Alat ini memungkinkan Anda untuk melakukan skrining mandiri terhadap kecanduan media sosial menggunakan instrumen standar SMDS-27.
-    Jawaban Anda akan dianalisis untuk memberikan wawasan yang dipersonalisasi dan didukung secara ilmiah.
+    Aplikasi ini memungkinkan Anda untuk melakukan skrining mandiri terhadap kecanduan media sosial menggunakan instrumen standar SMDS-27.
+    Jawaban Anda akan dianalisis untuk memberikan insight yang dipersonalisasi dan didukung secara ilmiah.
     """)
     
     # Disclaimer
