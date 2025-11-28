@@ -32,10 +32,7 @@ def analyze_response(profile_data, responses):
     total_score = sum(responses.values())
     
     prompt = f"""
-    **Role/Peran Anda:**
     Anda adalah seorang psikolog klinis yang memiliki spesialisasi dalam kecanduan media sosial.
-
-    *Tugas Anda:*
     Analisis kasus berikut berdasarkan Social Media Disorder Scale - 27 Item (SMDS-27).
     
     **Profil Pengguna:**
@@ -50,28 +47,29 @@ def analyze_response(profile_data, responses):
     {responses}
     
     **Persyaratan Analisis Ketat:**
-    1. **Gunakan Google Search**: Anda WAJIB menggunakan alat Google Search untuk mencari artikel ilmiah terbaru dan relevan (jurnal psikologi, kesehatan mental, dan lain-lain) yang mendukung analisis Anda.
+    1. **Gunakan Google Search**: Anda WAJIB menggunakan alat Google Search untuk mencari artikel ilmiah terbaru dan relevan (jurnal psikologi, studi kasus) yang mendukung analisis Anda.
     2. **Dasar Ilmiah**: Berikan analisis berdasarkan temuan ilmiah yang Anda dapatkan dari pencarian tersebut.
     3. **Saran yang Dipersonalisasi**: Tawarkan saran khusus yang disesuaikan dengan profil pengguna dan area skor tinggi mereka.
     4. **Kesimpulan yang Dapat Ditindaklanjuti**: Berikan langkah-langkah konkret.
-    5. **Sitasi Valid**: Sertakan judul artikel dan URL valid dari sumber ilmiah yang Anda temukan melalui Google Search
+    5. **Sitasi Valid**: Sertakan judul artikel dan URL valid dari sumber ilmiah yang Anda temukan melalui Google Search.
     6. **Bahasa**: Gunakan Bahasa Indonesia yang formal namun mudah dipahami.
-    7. **Format Output Konsisten**: Format output konsisten disemua response anda dengan penjelasan yang jelas menggunakan Markdown.
-
-    PERINGATAN KERAS UNTUK ANDA:
-    - Jangan pernah memberikan URL FIKTIK dalam memberikan rujukan ilmiah yang anda gunakan.
+    
+    Format output dengan jelas menggunakan Markdown.
     """
     
     try:
-        # Configure Google Search Tool using the new SDK types
-        grounding_tool = types.Tool(
-            google_search=types.GoogleSearch()
-        )
+        # Configure Tools: Google Search and URL Context
+        # Using the new google-genai SDK types
+        tools = [
+            types.Tool(google_search=types.GoogleSearch()),
+            types.Tool(url_context=types.UrlContext())
+        ]
         
         config = types.GenerateContentConfig(
-            tools=[grounding_tool]
+            tools=tools
         )
         
+        # Using gemini-2.5-flash
         response = client.models.generate_content(
             model="gemini-2.5-flash", 
             contents=prompt,
