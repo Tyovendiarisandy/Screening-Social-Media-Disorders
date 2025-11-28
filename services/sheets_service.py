@@ -63,6 +63,10 @@ def store_response(profile_data, responses):
         for key in sorted(responses.keys(), key=lambda x: int(x[1:])):
             row.append(responses[key])
             
+        # Calculate and append total score
+        total_score = sum(responses.values())
+        row.append(total_score)
+            
         sheet.append_row(row)
         return True
     except Exception as e:
