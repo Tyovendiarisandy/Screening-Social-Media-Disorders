@@ -2,7 +2,7 @@ import streamlit as st
 from services.sheets_service import store_response
 from services.gemini_service import analyze_response
 
-st.set_page_config(page_title="Skrining SMDS-27", page_icon="🧠", layout="wide")
+st.set_page_config(page_title="Skrining SMDS-27", page_icon="icon.jpg", layout="wide")
 
 def main():
     st.title("🧠 Skrining Skala Gangguan Media Sosial (SMDS-27)")
@@ -91,49 +91,49 @@ def render_questionnaire():
     
     questions = [
         # Preoccupation
-        "1. Selama setahun terakhir, apakah Anda sering merasa sulit untuk tidak melihat pesan di media sosial ketika sedang melakukan hal lain (misalnya, tugas sekolah/kuliah/kerja)?",
-        "2. Selama setahun terakhir, apakah Anda sering merasa tidak bisa memikirkan hal lain selain saat di mana Anda bisa menggunakan media sosial lagi?",
-        "3. Selama setahun terakhir, apakah Anda sering duduk menunggu sampai sesuatu terjadi lagi di media sosial?",
+        "1. Apakah Anda sering memikirkan tentang media sosial meskipun kamu tidak sedang menggunakannya?",
+        "2. Apakah Anda sering merasa tidak sabar untuk segera menggunakan media sosial kembali?,
+        "3. Apakah Anda sering berpikir tentang apa yang akan Anda lakukan atau lihat di media sosial nanti?,
         
         # Tolerance
-        "4. Selama setahun terakhir, apakah Anda sering merasa tidak puas karena ingin menghabiskan lebih banyak waktu di media sosial?",
-        "5. Selama setahun terakhir, apakah Anda sering merasa perlu menghabiskan waktu lebih banyak di media sosial untuk mendapatkan perasaan puas yang sama?",
-        "6. Selama setahun terakhir, apakah Anda sering mengalami perasaan puas dari menggunakan media sosial hanya bertahan sebentar dan Anda ingin segera menggunakannya lagi?",
+        "4. Apakah Anda merasa perlu menggunakan media sosial lebih sering dari sebelumnya?",
+        "5. Apakah Anda merasa perlu menghabiskan waktu lebih lama di media sosial untuk merasa puas?",
+        "6. Apakah Anda merasa bahwa waktu yang kamu habiskan di media sosial saat ini terasa kurang cukup?",
         
         # Withdrawal
-        "7. Selama setahun terakhir, apakah Anda sering merasa buruk ketika tidak bisa menggunakan media sosial?",
-        "8. Selama setahun terakhir, apakah Anda sering merasa gelisah, jengkel, atau tidak bahagia ketika tidak bisa menggunakan media sosial?",
-        "9. Selama setahun terakhir, apakah Anda sering mengalami dorongan kuat untuk menggunakan media sosial ketika Anda tidak bisa melakukannya?",
+        "7. Apakah Anda merasa gelisah atau stres jika tidak bisa menggunakan media sosial?",
+        "8. Apakah Anda menjadi mudah marah atau tersinggung ketika dilarang atau tidak bisa mengakses media sosial?",
+        "9. Apakah Anda merasa sedih atau hampa jika tidak membuka media sosial dalam beberapa waktu?",
         
         # Persistence
-        "10. Selama setahun terakhir, apakah Anda pernah mencoba mengurangi waktu bermain media sosial, tetapi gagal?",
-        "11. Selama setahun terakhir, apakah Anda sering gagal mengurangi penggunaan media sosial meskipun orang lain menyuruh Anda menguranginya?",
-        "12. Selama setahun terakhir, apakah Anda sering merasa sulit untuk mengurangi penggunaan media sosial, bahkan ketika Anda sangat ingin melakukannya?",
+        "10. Apakah Anda sudah mencoba mengurangi waktu bermain media sosial tetapi gagal?",
+        "11. Apakah Anda sering berniat hanya membuka sebentar, tetapi malah menghabiskan waktu berjam-jam?",
+        "12. Apakah Anda merasa tidak mampu menghentikan kebiasaan menggunakan media sosial meskipun kamu ingin?",
         
         # Displacement
-        "13. Selama setahun terakhir, apakah Anda sering mengabaikan aktivitas lain (misalnya, hobi, olahraga, tugas) karena ingin menggunakan media sosial?",
-        "14. Selama setahun terakhir, apakah Anda sering menghabiskan lebih sedikit waktu untuk kegiatan penting karena lebih memilih menggunakan media sosial?",
-        "15. Selama setahun terakhir, apakah Anda sering memilih menggunakan media sosial daripada bertemu teman atau melakukan aktivitas lain?",
+        "13. Apakah Anda lebih memilih bermain media sosial daripada berkumpul/berinteraksi dengan teman atau keluarga secara langsung?",
+        "14. Apakah Anda mengurangi waktu untuk melakukan hobi atau olahraga demi dapat bermain media sosial?",
+        "15. Apakah Anda merasa dunia maya lebih menarik daripada kegiatan di dunia nyata?",
         
         # Problems
-        "16. Selama setahun terakhir, apakah Anda sering bertengkar dengan orang lain karena penggunaan media sosial Anda?",
-        "17. Selama setahun terakhir, apakah Anda sering mengalami masalah di sekolah, tempat kerja, atau dengan teman/keluarga karena penggunaan media sosial Anda?",
-        "18. Selama setahun terakhir, apakah Anda sering merasakan konsekuensi negatif (misalnya, nilai buruk, teguran) akibat penggunaan media sosial Anda?",
+        "16. Apakah Anda sering menelantarkan tugas sekolah/pekerjaan karena asyik bermain media sosial?",
+        "17. Apakah kualitas tidur Anda sering terganggu karena menggunakan media sosial hingga larut malam?",
+        "18. Apakah Anda sering mengabaikan pekerjaan rumah atau kewajiban sehari-hari demi media sosial?",
         
         # Deception
-        "19. Selama setahun terakhir, apakah Anda sering berbohong kepada orang tua atau teman tentang jumlah waktu yang Anda habiskan di media sosial?",
-        "20. Selama setahun terakhir, apakah Anda sering menyembunyikan berapa banyak waktu yang Anda habiskan di media sosial dari orang lain?",
-        "21. Selama setahun terakhir, apakah Anda sering meremehkan penggunaan media sosial Anda untuk menghindari kritik dari orang lain?",
+        "19. Apakah Anda sering berbohong kepada orang tua atau teman tentang berapa lama Anda menggunakan media sosial?",
+        "20. Apakah Anda pernah menggunakan media sosial secara diam-diam agar tidak ketahuan orang lain?",
+        "21. Apakah Anda menyembunyikan fakta bahwa Anda sedang online dari orang-orang di sekitar Anda?",
         
         # Escape
-        "22. Selama setahun terakhir, apakah Anda sering menggunakan media sosial untuk melarikan diri dari perasaan negatif?",
-        "23. Selama setahun terakhir, apakah Anda sering menggunakan media sosial untuk melupakan masalah pribadi atau meredakan perasaan negatif seperti rasa bersalah atau kecemasan?",
-        "24. Selama setahun terakhir, apakah Anda sering beralih ke media sosial ketika merasa sedih, cemas, atau bosan?",
+        "22. Apakah Anda menggunakan media sosial untuk melupakan masalah pribadi?",
+        "23. Apakah Anda sering menggunakan media sosial untuk menghilangkan perasaan sedih, cemas, atau bersalah?",
+        "24. Apakah Anda bermain media sosial untuk menghindari memikirkan hal-hal yang tidak menyenangkan?",
         
         # Conflict
-        "25. Selama setahun terakhir, apakah Anda mengalami konflik serius dengan orang tua, saudara (teman, pasangan, dll.) karena penggunaan media sosial Anda?",
-        "26. Selama setahun terakhir, apakah Anda sering membahayakan hubungan penting karena penggunaan media sosial Anda?",
-        "27. Selama setahun terakhir, apakah Anda sering membahayakan peluang pendidikan atau karier karena penggunaan media sosial Anda?"
+        "25. Apakah Anda sering bertengkar dengan orang tua, saudara, atau pasangan karena penggunaan media sosial?",
+        "26. Apakah orang-orang di sekitar Anda sering mengeluh bahwa Anda terlalu banyak menggunakan media sosial?",
+        "27. Apakah hubungan Anda dengan orang terdekat menjadi renggang karena Anda terlalu fokus pada media sosial?"
     ]
     
     with st.form("smds_form"):
