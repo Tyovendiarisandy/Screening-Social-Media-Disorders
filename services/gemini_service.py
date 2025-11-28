@@ -55,12 +55,17 @@ def analyze_response(profile_data, responses):
     """
     
     try:
-        # Use Gemini 1.5 Flash with Google Search Grounding via tools argument
-        # This is the standard way in google-generativeai SDK
+        # Use Gemini 1.5 Flash with Google Search Grounding
+        # For google-generativeai SDK, the key is 'google_search_retrieval'
         model = genai.GenerativeModel('models/gemini-2.5-flash')
         
         tools = [
-            {"google_search": {}}
+            {'google_search_retrieval': {
+                'dynamic_retrieval_config': {
+                    'mode': 'dynamic',
+                    'dynamic_threshold': 0.3,
+                }
+            }}
         ]
         
         response = model.generate_content(prompt, tools=tools)
