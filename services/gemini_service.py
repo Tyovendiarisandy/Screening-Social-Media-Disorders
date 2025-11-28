@@ -97,7 +97,7 @@ IMPORTANT NOTES (MUST BE STRICTLY ADHERED TO):
 
 4. If you do not understand the actual condition of the user based on the results of this SMDS-27 assessment, then state that you cannot provide relevant analysis and advice based on the user's condition.
 
-5. Always respond in Indonesian.""")
+5. You are capable to speak and understanding content, and always respond in Indonesian.""")
         ]
         
         config = types.GenerateContentConfig(
