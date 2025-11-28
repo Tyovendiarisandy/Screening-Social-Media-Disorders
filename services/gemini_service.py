@@ -13,7 +13,7 @@ def configure_gemini():
 
 def analyze_response(profile_data, responses):
     """
-    Analyzes the user response using Gemini 2.5 Pro.
+    Analyzes the user response using Gemini 3 Pro Preview.
     
     Args:
         profile_data (dict): User profile information.
@@ -25,7 +25,7 @@ def analyze_response(profile_data, responses):
     if not configure_gemini():
         return "Error: Gemini not configured."
         
-    model = genai.GenerativeModel('gemini-2.5-pro')
+    model = genai.GenerativeModel('gemini-3-pro-preview')
     
     # Calculate score (simple sum for context, though Gemini can do it too)
     total_score = sum(responses.values())
