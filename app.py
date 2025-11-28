@@ -139,7 +139,7 @@ def render_questionnaire():
         "27. Apakah hubungan Anda dengan orang terdekat menjadi renggang karena Anda terlalu fokus pada media sosial?"
     ]
     
-   with st.form("smds_form"):
+    with st.form("smds_form"):
         responses = {}
         
         for i, question in enumerate(questions):
