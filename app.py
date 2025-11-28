@@ -11,6 +11,19 @@ def main():
     Jawaban Anda akan dianalisis untuk memberikan wawasan yang dipersonalisasi dan didukung secara ilmiah.
     """)
     
+    # Disclaimer
+    st.warning("""
+    ⚠️ **DISCLAIMER PENTING**
+    
+    Aplikasi skrining ini berfungsi **hanya sebagai alat self-assessment** yang dibantu oleh kecerdasan buatan (AI). 
+    
+    - **Bukan merupakan diagnosis medis atau psikologis** terhadap kondisi Anda
+    - Hasil analisis hanya bersifat **informasi pendamping** 
+    - Jika diperlukan, gunakan hasil ini sebagai **bahan diskusi dengan profesional** (psikolog/konselor) untuk mendapatkan penanganan yang tepat
+    - Untuk masalah kesehatan mental yang serius, segera konsultasikan dengan tenaga profesional berlisensi
+    """)
+    
+    
     # Initialize session state for steps
     if 'step' not in st.session_state:
         st.session_state.step = 1
