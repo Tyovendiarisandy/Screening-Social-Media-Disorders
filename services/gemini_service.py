@@ -69,7 +69,7 @@ def analyze_response(profile_data, responses):
     
     **Format Output:**
     - Gunakan Markdown
-    - Struktur: Ringkasan Skor → Analisis + Cek Artikel Ilmiah Pendukung → Saran Terpersonalisasi → Langkah Konkret → Referensi (dengan URL valid bisa diakses dan sesuai artikel ilmiah yang dirujuk)
+    - Struktur: Ringkasan Skor → Analisis → Saran Terpersonalisasi → Langkah Konkret → Referensi (dengan URL valid bisa diakses dan sesuai artikel ilmiah yang dirujuk)
     """
     
     try:
