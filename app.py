@@ -159,13 +159,16 @@ def render_questionnaire():
         submitted = st.form_submit_button("Kirim & Analisis", type="primary")
         
         if submitted:
-            st.toast("⏳ Mohon Tunggu Sebentar! Sistem sedang menganalisis jawaban Anda.", icon="⚙️")
             st.session_state.responses = responses
             st.session_state.step = 3
             st.rerun()
 
 def render_results():
     st.header("Langkah 3: Hasil Analisis")
+    
+    # Show centered loading message during analysis
+    if 'analysis' not in st.session_state:
+        st.info("⏳ **Mohon Tunggu Sebentar! Sistem sedang menganalisis jawaban Anda.**", icon="⚙️")
     
     with st.spinner("Menganalisis jawaban Anda..."):
         # Analyze with Gemini
