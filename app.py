@@ -10,8 +10,8 @@ def main():
     
     st.title("🧠 Skrining Skala Gangguan Media Sosial (SMDS-27)")
     st.markdown("""
-    Aplikasi ini memungkinkan Anda untuk melakukan skrining mandiri terhadap kecanduan media sosial menggunakan instrumen standar SMDS-27.
-    Jawaban Anda akan dianalisis untuk memberikan insight yang dipersonalisasi dan didukung secara ilmiah.
+    Alat ini memungkinkan Anda untuk melakukan skrining mandiri terhadap kecanduan media sosial menggunakan instrumen standar SMDS-27.
+    Jawaban Anda akan dianalisis untuk memberikan wawasan yang dipersonalisasi dan didukung secara ilmiah.
     """)
     
     # Disclaimer
@@ -139,7 +139,7 @@ def render_questionnaire():
         "27. Apakah hubungan Anda dengan orang terdekat menjadi renggang karena Anda terlalu fokus pada media sosial?"
     ]
     
-    with st.form("smds_form"):
+   with st.form("smds_form"):
         responses = {}
         
         for i, question in enumerate(questions):
@@ -156,9 +156,10 @@ def render_questionnaire():
             )
             st.divider()
             
-        submitted = st.form_submit_button("Kirim & Analisis")
+        submitted = st.form_submit_button("Kirim & Analisis", type="primary")
         
         if submitted:
+            st.toast("⏳ Mohon Tunggu Sebentar! Sistem sedang menganalisis jawaban Anda.", icon="⚙️")
             st.session_state.responses = responses
             st.session_state.step = 3
             st.rerun()
