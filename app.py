@@ -92,8 +92,8 @@ def render_questionnaire():
     questions = [
         # Preoccupation
         "1. Apakah Anda sering memikirkan tentang media sosial meskipun kamu tidak sedang menggunakannya?",
-        "2. Apakah Anda sering merasa tidak sabar untuk segera menggunakan media sosial kembali?,
-        "3. Apakah Anda sering berpikir tentang apa yang akan Anda lakukan atau lihat di media sosial nanti?,
+        "2. Apakah Anda sering merasa tidak sabar untuk segera menggunakan media sosial kembali?",
+        "3. Apakah Anda sering berpikir tentang apa yang akan Anda lakukan atau lihat di media sosial nanti?",
         
         # Tolerance
         "4. Apakah Anda merasa perlu menggunakan media sosial lebih sering dari sebelumnya?",
