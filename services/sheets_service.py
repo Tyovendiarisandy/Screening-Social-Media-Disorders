@@ -13,7 +13,11 @@ def get_sheets_connection():
     try:
         # Load credentials from secrets
         # Streamlit secrets handles toml parsing automatically
-        creds_dict = st.secrets["gcp_service_account"]
+        creds_dict = dict(st.secrets["gcp_service_account"])
+        
+        # Fix for Streamlit Cloud private key formatting issues
+        if "private_key" in creds_dict:
+            creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
         
         credentials = Credentials.from_service_account_info(
             creds_dict,
