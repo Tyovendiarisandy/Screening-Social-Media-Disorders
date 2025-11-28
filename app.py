@@ -5,6 +5,9 @@ from services.gemini_service import analyze_response
 st.set_page_config(page_title="Skrining SMDS-27", page_icon="icon.jpg", layout="wide")
 
 def main():
+    # Display header image
+    st.image("icon.jpg", use_container_width=True)
+    
     st.title("🧠 Skrining Skala Gangguan Media Sosial (SMDS-27)")
     st.markdown("""
     Alat ini memungkinkan Anda untuk melakukan skrining mandiri terhadap kecanduan media sosial menggunakan instrumen standar SMDS-27.
@@ -58,8 +61,6 @@ def render_profile_form():
                 st.rerun()
             else:
                 st.error("Mohon isi semua kolom.")
-
-# ... (render_questionnaire is already translated) ...
 
 def render_results():
     st.header("Langkah 3: Hasil Analisis")
