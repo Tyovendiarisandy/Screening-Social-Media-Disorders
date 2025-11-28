@@ -15,22 +15,34 @@ def get_sheets_connection():
         # Streamlit secrets handles toml parsing automatically
         creds_dict = dict(st.secrets["gcp_service_account"])
         
-        # Robust fix for Streamlit Cloud private key formatting issues
+        # Comprehensive fix for Streamlit Cloud private key formatting issues
         if "private_key" in creds_dict:
             private_key = creds_dict["private_key"]
             
-            # 1. Remove potential surrounding quotes if they were included in the string
-            private_key = private_key.strip('"').strip("'")
+            # 1. Remove potential surrounding quotes
+            private_key = private_key.strip().strip('"').strip("'")
             
-            # 2. Handle escaped newlines (common in TOML/Env vars)
-            if "\\n" in private_key:
-                private_key = private_key.replace("\\n", "\n")
+            # 2. Handle ALL possible newline representations
+            # Replace literal \n with actual newlines
+            private_key = private_key.replace("\\n", "\n")
+            # Also handle double-escaped newlines
+            private_key = private_key.replace("\\\\n", "\n")
             
-            # 3. Ensure it has the correct headers
-            if not private_key.startswith("-----BEGIN PRIVATE KEY-----"):
-                private_key = "-----BEGIN PRIVATE KEY-----\n" + private_key
-            if not private_key.endswith("-----END PRIVATE KEY-----") and not private_key.endswith("-----END PRIVATE KEY-----\n"):
-                private_key = private_key + "\n-----END PRIVATE KEY-----"
+            # 3. Remove any extra whitespace between lines
+            lines = [line.strip() for line in private_key.split('\n') if line.strip()]
+            
+            # 4. Reconstruct with proper formatting
+            if lines:
+                # Ensure proper header
+                if lines[0] != "-----BEGIN PRIVATE KEY-----":
+                    lines.insert(0, "-----BEGIN PRIVATE KEY-----")
+                
+                # Ensure proper footer
+                if lines[-1] != "-----END PRIVATE KEY-----":
+                    lines.append("-----END PRIVATE KEY-----")
+                
+                # Join with newlines
+                private_key = "\n".join(lines)
                 
             creds_dict["private_key"] = private_key
         
