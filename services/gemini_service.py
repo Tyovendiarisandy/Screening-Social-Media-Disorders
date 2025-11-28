@@ -32,11 +32,11 @@ def analyze_response(profile_data, responses):
     total_score = sum(responses.values())
     
     prompt = f"""
-    Anda adalah seorang psikolog ahli yang berspesialisasi dalam kecanduan media sosial.
-    Analisis kasus berikut berdasarkan Skala Gangguan Media Sosial - 27 Item (SMDS-27).
+    Anda adalah seorang psikolog klinis yang sangat ahli dalam menganalisis kecanduan media sosial.
+    Analisis kasus/kondisi user berdasarkan hasil pengisian form Skala Gangguan Media Sosial - 27 Item (SMDS-27).
     
-    **Profil Pengguna:**
-    - Alias: {profile_data.get('alias')}
+    **Profil User/Pengguna:**
+    - Nama/Alias: {profile_data.get('alias')}
     - Usia: {profile_data.get('age')}
     - Jenis Kelamin: {profile_data.get('gender')}
     - Pekerjaan: {profile_data.get('occupation')}
@@ -47,13 +47,13 @@ def analyze_response(profile_data, responses):
     {responses}
     
     **Persyaratan Analisis Ketat:**
-    1. **WAJIB Gunakan Google Search**: Gunakan alat pencarian untuk menemukan artikel ilmiah NYATA dari jurnal psikologi atau studi kasus yang relevan dengan kecanduan media sosial dan SMDS-27.
+    1. **WAJIB Gunakan Google Search + URL context**: Gunakan alat pencarian untuk menemukan artikel ilmiah NYATA dari jurnal psikologi atau studi kasus yang relevan dengan kecanduan media sosial dan SMDS-27.
     
     2. **Dasar Ilmiah**: Analisis HARUS berdasarkan temuan dari artikel yang Anda temukan melalui pencarian. JANGAN membuat referensi fiktif.
     
-    3. **Saran Dipersonalisasi**: Berikan saran khusus sesuai profil pengguna (usia, pekerjaan) dan area skor tinggi mereka.
+    3. **Saran Dipersonalisasi**: Berikan saran khusus sesuai profil pengguna (usia, pekerjaan) dan area skor tinggi mereka yang perlu dibahas bersama user/pengguna.
     
-    4. **Langkah Konkret**: Berikan tindakan spesifik yang dapat dilakukan segera.
+    4. **Langkah Konkret**: Berikan tindakan spesifik yang dapat dilakukan segera bagi user/pengguna.
     
     5. **SITASI DENGAN URL VALID**:
        - WAJIB sertakan bagian "Referensi" di akhir analisis
@@ -64,6 +64,7 @@ def analyze_response(profile_data, responses):
          * Vol. / No. Artikel 
          * Jurnal (jurnal ilmiah yang mempublikasi/mengindex artikel ilmiah) 
          * Pages (jika tersedia jumlah halaman artikel ilmiah)
+         * DOI (jika tersedia)
        - Format: penulisan sitasi dengan format APA
        - PERINGATAN KERAS: PASTIKAN artikel ilmiah valid dan dapat diverifikasi pada pencarian google search keberadaannya (lakukan double check).
     
@@ -71,7 +72,7 @@ def analyze_response(profile_data, responses):
     
     **Format Output:**
     - Gunakan Markdown
-    - Struktur: **Ringkasan Skor** → **Analisis** → **Saran Terpersonalisasi** → **Langkah Konkret** → **Referensi** (artikel ilmiah yang dirujuk dengan format APA)
+    - Struktur: **Greetings** → ** **Ringkasan Skor** → **Analisis** → **Saran Terpersonalisasi** → **Langkah Konkret** → **Referensi** (artikel ilmiah yang dirujuk dengan format APA)
     """
     
     try:
