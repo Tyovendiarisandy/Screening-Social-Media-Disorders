@@ -18,15 +18,20 @@ def get_sheets_connection():
         # Robust fix for Streamlit Cloud private key formatting issues
         if "private_key" in creds_dict:
             private_key = creds_dict["private_key"]
-            # Handle various newline representations
+            
+            # 1. Remove potential surrounding quotes if they were included in the string
+            private_key = private_key.strip('"').strip("'")
+            
+            # 2. Handle escaped newlines (common in TOML/Env vars)
             if "\\n" in private_key:
                 private_key = private_key.replace("\\n", "\n")
             
-            # Ensure headers/footers are correct if they got mangled
-            if "-----BEGIN PRIVATE KEY-----" not in private_key:
-                 # Try to reconstruct if it's just the body
-                 pass # Assuming if it's missing headers it might be a different format, but usually it's just newlines
-            
+            # 3. Ensure it has the correct headers
+            if not private_key.startswith("-----BEGIN PRIVATE KEY-----"):
+                private_key = "-----BEGIN PRIVATE KEY-----\n" + private_key
+            if not private_key.endswith("-----END PRIVATE KEY-----") and not private_key.endswith("-----END PRIVATE KEY-----\n"):
+                private_key = private_key + "\n-----END PRIVATE KEY-----"
+                
             creds_dict["private_key"] = private_key
         
         credentials = Credentials.from_service_account_info(
