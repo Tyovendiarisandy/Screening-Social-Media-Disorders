@@ -1,16 +1,15 @@
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 import streamlit as st
 
-def get_gemini_client():
-    """Configures and returns the Gemini Client."""
+def configure_gemini():
+    """Configures the Gemini API."""
     try:
         api_key = st.secrets["gemini"]["api_key"]
-        client = genai.Client(api_key=api_key)
-        return client
+        genai.configure(api_key=api_key)
+        return True
     except Exception as e:
         st.error(f"Error configuring Gemini: {e}")
-        return None
+        return False
 
 def analyze_response(profile_data, responses):
     """
@@ -23,8 +22,7 @@ def analyze_response(profile_data, responses):
     Returns:
         str: The analysis text from Gemini.
     """
-    client = get_gemini_client()
-    if not client:
+    if not configure_gemini():
         return "Error: Gemini not configured."
         
     # Calculate score
@@ -50,29 +48,22 @@ def analyze_response(profile_data, responses):
     2. **Dasar Ilmiah**: Berikan analisis berdasarkan temuan ilmiah yang Anda dapatkan dari pencarian tersebut.
     3. **Saran yang Dipersonalisasi**: Tawarkan saran khusus yang disesuaikan dengan profil pengguna dan area skor tinggi mereka.
     4. **Kesimpulan yang Dapat Ditindaklanjuti**: Berikan langkah-langkah konkret.
-    5. **Sitasi Valid**: Sertakan judul artikel dan URL valid dari sumber ilmiah yang Anda temukan melalui Google Search (JANGAN BERIKAN ARTIKEL ILMIAH FIKTIF).
+    5. **Sitasi Valid**: Sertakan judul artikel dan URL valid dari sumber ilmiah yang Anda temukan melalui Google Search.
     6. **Bahasa**: Gunakan Bahasa Indonesia yang formal namun mudah dipahami.
     
     Format output dengan jelas menggunakan Markdown.
     """
     
     try:
-        # Configure Google Search Tool
-        grounding_tool = types.Tool(
-            google_search=types.GoogleSearch()
-        )
+        # Use Gemini 1.5 Flash with Google Search Grounding via tools argument
+        # This is the standard way in google-generativeai SDK
+        model = genai.GenerativeModel('models/gemini-2.5-flash')
         
-        config = types.GenerateContentConfig(
-            tools=[grounding_tool]
-        )
+        tools = [
+            {"google_search": {}}
+        ]
         
-        # Using the model requested by user
-        response = client.models.generate_content(
-            model="gemini-2.5-flash", 
-            contents=prompt,
-            config=config,
-        )
-        
+        response = model.generate_content(prompt, tools=tools)
         return response.text
     except Exception as e:
         return f"Error generating analysis: {e}"
