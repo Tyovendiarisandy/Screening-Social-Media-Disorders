@@ -32,8 +32,8 @@ def analyze_response(profile_data, responses):
     total_score = sum(responses.values())
     
     prompt = f"""
-    Anda adalah seorang psikolog klinis yang memiliki spesialisasi dalam kecanduan media sosial.
-    Analisis kasus berikut berdasarkan Social Media Disorder Scale - 27 Item (SMDS-27).
+    Anda adalah seorang psikolog ahli yang berspesialisasi dalam kecanduan media sosial.
+    Analisis kasus berikut berdasarkan Skala Gangguan Media Sosial - 27 Item (SMDS-27).
     
     **Profil Pengguna:**
     - Alias: {profile_data.get('alias')}
@@ -47,14 +47,29 @@ def analyze_response(profile_data, responses):
     {responses}
     
     **Persyaratan Analisis Ketat:**
-    1. **Gunakan Google Search**: Anda WAJIB menggunakan alat Google Search untuk mencari artikel ilmiah terbaru dan relevan (jurnal psikologi, studi kasus) yang mendukung analisis Anda.
-    2. **Dasar Ilmiah**: Berikan analisis berdasarkan temuan ilmiah yang Anda dapatkan dari pencarian tersebut.
-    3. **Saran yang Dipersonalisasi**: Tawarkan saran khusus yang disesuaikan dengan profil pengguna dan area skor tinggi mereka.
-    4. **Kesimpulan yang Dapat Ditindaklanjuti**: Berikan langkah-langkah konkret.
-    5. **Sitasi Valid**: Sertakan judul artikel dan URL valid dari sumber ilmiah yang Anda temukan melalui Google Search.
-    6. **Bahasa**: Gunakan Bahasa Indonesia yang formal namun mudah dipahami.
+    1. **WAJIB Gunakan Google Search**: Gunakan alat pencarian untuk menemukan artikel ilmiah NYATA dari jurnal psikologi atau studi kasus yang relevan dengan kecanduan media sosial dan SMDS-27.
     
-    Format output dengan jelas menggunakan Markdown.
+    2. **Dasar Ilmiah**: Analisis HARUS berdasarkan temuan dari artikel yang Anda temukan melalui pencarian. JANGAN membuat referensi fiktif.
+    
+    3. **Saran Dipersonalisasi**: Berikan saran khusus sesuai profil pengguna (usia, pekerjaan) dan area skor tinggi mereka.
+    
+    4. **Langkah Konkret**: Berikan tindakan spesifik yang dapat dilakukan segera.
+    
+    5. **SITASI DENGAN URL VALID**:
+       - WAJIB sertakan bagian "Referensi" di akhir analisis
+       - Untuk SETIAP artikel yang Anda kutip, tuliskan:
+         * Judul lengkap artikel
+         * Nama penulis dan tahun
+         * URL lengkap yang dapat diklik (harus berupa link NYATA dari hasil pencarian)
+       - Format: [Judul Artikel](URL_lengkap) - Penulis, Tahun
+       - Minimal 3-5 referensi dengan URL valid
+       - PASTIKAN URL adalah link asli dari artikel yang Anda temukan, BUKAN URL yang Anda buat sendiri
+    
+    6. **Bahasa**: Gunakan Bahasa Indonesia formal namun mudah dipahami.
+    
+    **Format Output:**
+    - Gunakan Markdown
+    - Struktur: Ringkasan Skor → Analisis → Saran → Langkah Konkret → Referensi (dengan URL valid)
     """
     
     try:
@@ -79,9 +94,9 @@ Anda tidak boleh memberikan saran yang mengarah kepada tindakan kriminal atau me
             system_instruction=system_instruction
         )
         
-        # Using gemini-2.5-flash-exp as the stable preview model for this SDK
+        # Using gemini-2.0-flash-exp as the stable preview model for this SDK
         response = client.models.generate_content(
-            model="gemini-2.5-flash", 
+            model="gemini-2.0-flash-exp", 
             contents=prompt,
             config=config,
         )
