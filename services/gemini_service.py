@@ -60,16 +60,15 @@ def analyze_response(profile_data, responses):
        - Untuk SETIAP artikel yang Anda kutip, tuliskan:
          * Judul lengkap artikel
          * Nama penulis dan tahun
-         * URL lengkap yang dapat diklik (harus berupa link NYATA dari hasil pencarian)
-       - Format: [Judul Artikel](URL_lengkap) - Penulis, Tahun
-       - Minimal 3-5 referensi dengan URL valid
-       - PERINGATAN KERAS: PASTIKAN URL adalah link asli dari artikel yang Anda temukan, BUKAN URL yang Anda buat sendiri
+         * URL lengkap yang dapat diklik (jika ada dan sudah dipastikan valid dan benar tersedia keberadaannya)
+       - Format: [Judul Artikel] - Penulis, Tahun, [Link URL]
+       - PERINGATAN KERAS: PASTIKAN artikel ilmiah valid dan dapat diverifikasi pada pencarian google search keberadaannya (lakukan double check).
     
     6. **Bahasa**: Gunakan Bahasa Indonesia formal namun mudah dipahami.
     
     **Format Output:**
     - Gunakan Markdown
-    - Struktur: Ringkasan Skor → Analisis → Saran Terpersonalisasi → Langkah Konkret → Referensi (dengan URL valid bisa diakses dan sesuai artikel ilmiah yang dirujuk)
+    - Struktur: Ringkasan Skor → Analisis → Saran Terpersonalisasi → Langkah Konkret → Referensi (artikel ilmiah yang dirujuk dengan menyertakan link URL yang valid)
     """
     
     try:
