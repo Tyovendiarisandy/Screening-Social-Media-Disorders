@@ -1,19 +1,20 @@
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import streamlit as st
 
-def configure_gemini():
-    """Configures the Gemini API."""
+def get_gemini_client():
+    """Configures and returns the Gemini Client."""
     try:
         api_key = st.secrets["gemini"]["api_key"]
-        genai.configure(api_key=api_key)
-        return True
+        client = genai.Client(api_key=api_key)
+        return client
     except Exception as e:
         st.error(f"Error configuring Gemini: {e}")
-        return False
+        return None
 
 def analyze_response(profile_data, responses):
     """
-    Analyzes the user response using Gemini 2.5 Flash Live.
+    Analyzes the user response using Gemini with Google Search grounding.
     
     Args:
         profile_data (dict): User profile information.
@@ -22,40 +23,56 @@ def analyze_response(profile_data, responses):
     Returns:
         str: The analysis text from Gemini.
     """
-    if not configure_gemini():
+    client = get_gemini_client()
+    if not client:
         return "Error: Gemini not configured."
         
-    model = genai.GenerativeModel('gemini-2.5-flash-native-audio-preview-09-2025')
-    
-    # Calculate score (simple sum for context, though Gemini can do it too)
+    # Calculate score
     total_score = sum(responses.values())
     
     prompt = f"""
-    You are an expert psychologist specializing in social media addiction. 
-    Analyze the following case based on the Social Media Disorder Scale - 27 Items (SMDS-27).
+    Anda adalah seorang psikolog ahli yang berspesialisasi dalam kecanduan media sosial.
+    Analisis kasus berikut berdasarkan Skala Gangguan Media Sosial - 27 Item (SMDS-27).
     
-    **User Profile:**
+    **Profil Pengguna:**
     - Alias: {profile_data.get('alias')}
-    - Age: {profile_data.get('age')}
-    - Gender: {profile_data.get('gender')}
-    - Occupation: {profile_data.get('occupation')}
+    - Usia: {profile_data.get('age')}
+    - Jenis Kelamin: {profile_data.get('gender')}
+    - Pekerjaan: {profile_data.get('occupation')}
     
-    **Assessment Results:**
-    - Total Score: {total_score} (Range: 27-135)
-    - Item Responses (1=Strongly Disagree, 5=Strongly Agree):
+    **Hasil Asesmen:**
+    - Skor Total: {total_score} (Rentang: 27-135)
+    - Jawaban Item (1=Sangat Tidak Setuju, 5=Sangat Setuju):
     {responses}
     
-    **Strict Analysis Requirements:**
-    1. **Scientific Basis**: Provide an analysis based ONLY on relevant scientific articles and psychological frameworks regarding social media addiction.
-    2. **Personalized Advice**: Offer specific advice tailored to the user's profile (age, occupation) and their specific high-scoring areas.
-    3. **Actionable Conclusion**: Provide concrete, actionable steps the user can take immediately.
-    4. **Citations**: You MUST include the URLs of the scientific articles you reference.
+    **Persyaratan Analisis Ketat:**
+    1. **Gunakan Google Search**: Anda WAJIB menggunakan alat Google Search untuk mencari artikel ilmiah terbaru dan relevan (jurnal psikologi, studi kasus) yang mendukung analisis Anda.
+    2. **Dasar Ilmiah**: Berikan analisis berdasarkan temuan ilmiah yang Anda dapatkan dari pencarian tersebut.
+    3. **Saran yang Dipersonalisasi**: Tawarkan saran khusus yang disesuaikan dengan profil pengguna dan area skor tinggi mereka.
+    4. **Kesimpulan yang Dapat Ditindaklanjuti**: Berikan langkah-langkah konkret.
+    5. **Sitasi Valid**: Sertakan judul artikel dan URL valid dari sumber ilmiah yang Anda temukan melalui Google Search (JANGAN BERIKAN ARTIKEL ILMIAH FIKTIF).
+    6. **Bahasa**: Gunakan Bahasa Indonesia yang formal namun mudah dipahami.
     
-    Format the output clearly with Markdown.
+    Format output dengan jelas menggunakan Markdown.
     """
     
     try:
-        response = model.generate_content(prompt)
+        # Configure Google Search Tool
+        grounding_tool = types.Tool(
+            google_search=types.GoogleSearch()
+        )
+        
+        config = types.GenerateContentConfig(
+            tools=[grounding_tool]
+        )
+        
+        # Using the model requested by user
+        response = client.models.generate_content(
+            model="gemini-2.5-flash", 
+            contents=prompt,
+            config=config,
+        )
+        
         return response.text
     except Exception as e:
         return f"Error generating analysis: {e}"
