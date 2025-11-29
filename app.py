@@ -1,29 +1,38 @@
 import streamlit as st
 from services.gemini_service import analyze_response
 from datetime import datetime
+import os
 
 # Konfigurasi Halaman
-st.set_page_config(page_title="Skrining SMDS-27", page_icon="🧠", layout="wide")
+st.set_page_config(
+    page_title="Skrining SMDS-27", 
+    page_icon="🧠", 
+    layout="centered" # Layout centered biasanya lebih bagus untuk form kuesioner
+)
 
 def main():
-    # Menampilkan Header (Gunakan icon/image jika ada file-nya)
-    # st.image("icon.jpg", use_container_width=True) 
+    # --- 1. TAMPILKAN GAMBAR ILUSTRASI ---
+    # Pastikan file 'icon.jpg' ada di satu folder dengan app.py
+    try:
+        st.image("icon.jpg", use_container_width=True, caption="Ilustrasi: Tantangan di Era Digital")
+    except Exception:
+        # Fallback jika gambar lupa diupload/tidak ada
+        st.warning("⚠️ File 'icon.jpg' tidak ditemukan di folder aplikasi.")
     
-    st.title("🧠 Skrining Social Media Disorder Scale - 27 Items (SMDS-27)")
+    st.title("🧠 Skrining Social Media Disorder Scale 27 Items (SMDS-27)")
     st.markdown("""
-    Aplikasi ini memungkinkan Anda untuk melakukan skrining mandiri terhadap indikasi kecanduan media sosial menggunakan instrumen standar SMDS-27.
-    Jawaban Anda akan dianalisis untuk memberikan wawasan yang dipersonalisasi dan didukung secara ilmiah.
+    Aplikasi ini memungkinkan Anda untuk melakukan skrining mandiri terhadap kecanduan media sosial menggunakan instrumen standar **SMDS-27**.
+    Jawaban Anda akan dianalisis oleh AI untuk memberikan wawasan yang dipersonalisasi dan didukung referensi ilmiah.
     """)
     
     # Disclaimer
     st.warning("""
     ⚠️ **DISCLAIMER PENTING**
     
-    Aplikasi skrining ini berfungsi **hanya sebagai alat self-assessment** yang dibantu oleh kecerdasan buatan (AI). 
+    Aplikasi ini berfungsi **hanya sebagai alat self-assessment** (skrining awal).
     
-    - **Bukan merupakan diagnosis medis atau psikologis** terhadap kondisi Anda.
-    - Hasil analisis hanya bersifat **informasi pendamping**.
-    - Untuk masalah kesehatan mental yang serius, segera konsultasikan dengan tenaga profesional berlisensi.
+    - **Bukan Diagnosis Medis:** Hasil ini tidak menggantikan diagnosis profesional.
+    - **Bantuan Profesional:** Jika Anda merasa terganggu secara psikologis, segera hubungi psikolog/psikiater.
     """)
     
     # Inisialisasi Session State
@@ -64,7 +73,7 @@ def render_profile_form():
 
 def render_questionnaire():
     st.header("Langkah 2: Kuesioner SMDS-27")
-    st.info("Silakan jawab 27 pertanyaan berikut dengan jujur (Rentang 1 tahun terakhir).")
+    st.info("Silakan jawab 27 pertanyaan berikut dengan jujur (dalam 1 tahun terakhir).")
     
     questions = [
         # Preoccupation
