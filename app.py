@@ -144,7 +144,7 @@ def render_results():
     if 'analysis' not in st.session_state:
         st.info("⏳ **Mohon Tunggu... Sistem sedang melakukan studi literatur & analisis jawaban Anda.**", icon="⚙️")
     
-    with st.spinner("Sedang menghubungi Gemini AI..."):
+    with st.spinner("AI Sedang Menganalisis Jawaban Anda..."):
         # Panggil fungsi dari gemini_service.py
         if 'analysis' not in st.session_state:
             try:
