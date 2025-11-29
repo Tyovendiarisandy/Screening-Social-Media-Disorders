@@ -47,29 +47,20 @@ def analyze_response(profile_data, responses):
     {responses}
     
     **Persyaratan Analisis Ketat:**
-    1. **WAJIB Gunakan Google Search**: Gunakan alat pencarian untuk menemukan artikel ilmiah NYATA dari jurnal psikologi atau studi kasus yang relevan dengan kasus kecanduan media sosial dan SMDS-27.
+    1. **WAJIB Gunakan Tools Google Search dan URL Context**: Gunakan alat pencarian untuk menemukan artikel ilmiah NYATA dari jurnal psikologi atau studi kasus yang relevan dengan kasus kecanduan media sosial dan SMDS-27.
     
-    2. **Dasar Ilmiah**: Analisis HARUS berdasarkan temuan dari artikel yang Anda temukan melalui pencarian. JANGAN membuat referensi fiktif.
+    2. **Dasar Ilmiah**: Analisis HARUS berdasarkan temuan dari research paper yang Anda temukan melalui pencarian google search. JANGAN membuat referensi fiktif.
     
     3. **Saran Dipersonalisasi**: Berikan saran khusus sesuai profil pengguna (usia, pekerjaan) dan area skor tinggi mereka.
     
     4. **Langkah Konkret**: Berikan tindakan spesifik yang dapat dilakukan segera.
     
-    5. **SITASI DENGAN URL VALID**:
-       - WAJIB sertakan bagian "Referensi" di akhir analisis
-       - Untuk SETIAP artikel yang Anda kutip, tuliskan:
-         * Judul lengkap artikel
-         * Nama penulis dan tahun
-         * URL lengkap yang dapat diklik (harus berupa link NYATA dari hasil pencarian)
-       - Format: [Judul Artikel](URL_lengkap) - Penulis, Tahun
-       - Minimal 3-5 referensi dengan URL valid
-       - PASTIKAN URL adalah link asli dari artikel yang Anda temukan, BUKAN URL yang Anda buat sendiri
+    5. **SITASI DENGAN URL VALID**: Tulis bagian analisis dan kutip semua klaim faktual yang mendukung analisismu dengan menggunakan tautan hiperteks Markdown inline, seperti ini: [teks tautan](URL). Jangan gunakan catatan kaki atau daftar referensi."
     
     6. **Bahasa**: Gunakan Bahasa Indonesia formal namun mudah dipahami.
     
     **Format Output:**
-    - Gunakan Markdown
-    - Struktur: User Greetings →  Ringkasan Skor → Analisis → Saran → Langkah Konkret → Referensi (dengan URL valid)
+    - Struktur: Pendahuluan (Menyapa User dan menjelaskan singkat terkait skrining ini) →  Ringkasan Skor → Analisis → Saran Terpersonalisasi → Langkah Konkret
     """
     
     try:
