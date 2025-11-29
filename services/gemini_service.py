@@ -32,11 +32,11 @@ def analyze_response(profile_data, responses):
     total_score = sum(responses.values())
     
     prompt = f"""
-    Anda adalah seorang psikolog klinis yang sangat ahli dalam menganalisis kecanduan media sosial.
-    Analisis kasus/kondisi user berdasarkan hasil pengisian form Skala Gangguan Media Sosial - 27 Item (SMDS-27).
+    Anda adalah seorang psikolog klinis yang sangat ahli dalam menganalisa kasus kecanduan media sosial.
+    Analisis setiap kasus user berikut berdasarkan Skala Gangguan Media Sosial - 27 Item (Social Media Disorder Scale - 27 Items) yang dipelopori oleh van den Eijnden et al. (2016).
     
-    **Profil User/Pengguna:**
-    - Nama/Alias: {profile_data.get('alias')}
+    **Profil Pengguna:**
+    - Alias: {profile_data.get('alias')}
     - Usia: {profile_data.get('age')}
     - Jenis Kelamin: {profile_data.get('gender')}
     - Pekerjaan: {profile_data.get('occupation')}
@@ -47,32 +47,29 @@ def analyze_response(profile_data, responses):
     {responses}
     
     **Persyaratan Analisis Ketat:**
-    1. **WAJIB Gunakan Google Search + URL context**: Gunakan alat pencarian untuk menemukan artikel ilmiah NYATA dari jurnal psikologi atau studi kasus yang relevan dengan kecanduan media sosial dan SMDS-27.
+    1. **WAJIB Gunakan Google Search**: Gunakan alat pencarian untuk menemukan artikel ilmiah NYATA dari jurnal psikologi atau studi kasus yang relevan dengan kasus kecanduan media sosial dan SMDS-27.
     
     2. **Dasar Ilmiah**: Analisis HARUS berdasarkan temuan dari artikel yang Anda temukan melalui pencarian. JANGAN membuat referensi fiktif.
     
-    3. **Saran Dipersonalisasi**: Berikan saran khusus sesuai profil pengguna (usia, pekerjaan) dan area skor tinggi mereka yang perlu dibahas bersama user/pengguna.
+    3. **Saran Dipersonalisasi**: Berikan saran khusus sesuai profil pengguna (usia, pekerjaan) dan area skor tinggi mereka.
     
-    4. **Langkah Konkret**: Berikan tindakan spesifik yang dapat dilakukan segera bagi user/pengguna.
+    4. **Langkah Konkret**: Berikan tindakan spesifik yang dapat dilakukan segera.
     
     5. **SITASI DENGAN URL VALID**:
        - WAJIB sertakan bagian "Referensi" di akhir analisis
        - Untuk SETIAP artikel yang Anda kutip, tuliskan:
-         * Nama Penulis
-         * Tahun 
-         * Judul Artikel
-         * Vol. / No. Artikel 
-         * Jurnal (jurnal ilmiah yang mempublikasi/mengindex artikel ilmiah) 
-         * Pages (jika tersedia jumlah halaman artikel ilmiah)
-         * DOI (jika tersedia)
-       - Format: penulisan sitasi dengan format APA
-       - PERINGATAN KERAS: PASTIKAN artikel ilmiah valid dan dapat diverifikasi pada pencarian google search keberadaannya (lakukan double check).
+         * Judul lengkap artikel
+         * Nama penulis dan tahun
+         * URL lengkap yang dapat diklik (harus berupa link NYATA dari hasil pencarian)
+       - Format: [Judul Artikel](URL_lengkap) - Penulis, Tahun
+       - Minimal 3-5 referensi dengan URL valid
+       - PASTIKAN URL adalah link asli dari artikel yang Anda temukan, BUKAN URL yang Anda buat sendiri
     
     6. **Bahasa**: Gunakan Bahasa Indonesia formal namun mudah dipahami.
     
     **Format Output:**
     - Gunakan Markdown
-    - Struktur: **Greetings** → ** **Ringkasan Skor** → **Analisis** → **Saran Terpersonalisasi** → **Langkah Konkret** → **Referensi** (artikel ilmiah yang dirujuk dengan format APA)
+    - Struktur: User Greetings →  Ringkasan Skor → Analisis → Saran → Langkah Konkret → Referensi (dengan URL valid)
     """
     
     try:
@@ -85,22 +82,11 @@ def analyze_response(profile_data, responses):
         
         # System instruction to guide the model's behavior
         system_instruction = [
-            types.Part.from_text(text="""You are a clinical psychologist who is highly skilled in screening users/patients using the 27-item Social Media Disorder Scale assessment pioneered by Van den Eijnden, Lemmens, & Valkenburg (2016). 
+            types.Part.from_text(text="""Anda adalah seorang psikolog klinis yang ahli dalam melakukan skrining terhadap user/pasien terkait assessment Social Media Disorder Scale - 27 Items yang dipelopori oleh van den Eijnden et al. 
 
-You can provide personalized advice based on the user/patient's responses when completing the Social Media Disorder Scale - 27 Items (SMDS-27) form, which you can link to references from scientific articles found online through relevant open-access research journals related to the user's case.
+Anda dapat memberikan saran terpersonalisasi berdasarkan jawaban dari user/pasien saat mengisi form Social Media Disorder Scale - 27 Items yang Anda kaitkan dengan referensi dari artikel ilmiah yang dapat ditemui di internet melalui situs open-access research journal yang relevan.
 
-
-IMPORTANT NOTES (MUST BE STRICTLY ADHERED TO):
-
-1. You must not provide advice that leads to criminal or illegal actions.
-
-3. You must also provide scientific advice by including valid URLs from the scientific articles you cite and use in your analysis. 
-
-3. Avoid hallucinations when responding to users.
-
-4. If you do not understand the actual condition of the user based on the results of this SMDS-27 assessment, then state that you cannot provide relevant analysis and advice based on the user's condition.
-
-5. You are capable to speak and understanding content, and always respond in Indonesian.""")
+Anda tidak boleh memberikan saran yang mengarah kepada tindakan kriminal atau melanggar hukum. Disamping itu, Anda juga harus memberikan saran yang ilmiah dan bukan dari hasil halusinasi.""")
         ]
         
         config = types.GenerateContentConfig(
@@ -112,13 +98,65 @@ IMPORTANT NOTES (MUST BE STRICTLY ADHERED TO):
             media_resolution="MEDIA_RESOLUTION_HIGH"
         )
         
-        # Using gemini-2.5-flash-exp as the stable preview model for this SDK
+        # Using gemini-2.0-flash-exp as the stable preview model for this SDK
         response = client.models.generate_content(
-            model="gemini-2.5-flash", 
+            model="gemini-2.0-flash-exp", 
             contents=prompt,
             config=config,
         )
         
-        return response.text
+        # Add inline citations from grounding metadata
+        text_with_citations = add_citations(response)
+        return text_with_citations
     except Exception as e:
         return f"Error generating analysis: {e}"
+
+def add_citations(response):
+    """
+    Adds inline citations to the response text based on grounding metadata.
+    This creates clickable links to the actual sources used by the model.
+    """
+    try:
+        text = response.text
+        
+        # Check if grounding metadata exists
+        if not hasattr(response, 'candidates') or not response.candidates:
+            return text
+            
+        candidate = response.candidates[0]
+        if not hasattr(candidate, 'grounding_metadata'):
+            return text
+            
+        grounding_metadata = candidate.grounding_metadata
+        if not hasattr(grounding_metadata, 'grounding_supports') or not hasattr(grounding_metadata, 'grounding_chunks'):
+            return text
+        
+        supports = grounding_metadata.grounding_supports
+        chunks = grounding_metadata.grounding_chunks
+        
+        if not supports or not chunks:
+            return text
+        
+        # Sort supports by end_index in descending order to avoid shifting issues when inserting
+        sorted_supports = sorted(supports, key=lambda s: s.segment.end_index, reverse=True)
+        
+        for support in sorted_supports:
+            end_index = support.segment.end_index
+            if support.grounding_chunk_indices:
+                # Create citation string like [1](link1), [2](link2)
+                citation_links = []
+                for i in support.grounding_chunk_indices:
+                    if i < len(chunks):
+                        chunk = chunks[i]
+                        if hasattr(chunk, 'web') and hasattr(chunk.web, 'uri'):
+                            uri = chunk.web.uri
+                            citation_links.append(f"[{i + 1}]({uri})")
+                
+                if citation_links:
+                    citation_string = ", ".join(citation_links)
+                    text = text[:end_index] + " " + citation_string + text[end_index:]
+        
+        return text
+    except Exception as e:
+        # If citation adding fails, return original text
+        return response.text if hasattr(response, 'text') else str(response)
