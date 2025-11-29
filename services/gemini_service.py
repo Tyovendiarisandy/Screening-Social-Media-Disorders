@@ -40,10 +40,12 @@ def analyze_response(profile_data, responses):
     
     **INSTRUKSI BERPIKIR (CHAIN OF THOUGHT):**
     1.  WAJIB SEARCH: Cari literatur terbaru tentang cutoff score SMDS-27 lewat Google Search.
-    2.  Analisis korelasi pekerjaan '{profile_data.get('occupation')}' dengan risiko kecanduan.
-    3.  Tentukan 3 rekomendasi taktis.
+    2.  Rangkai Analisis yang berkorelasi antara pekerjaan '{profile_data.get('occupation')}' dengan faktor lain yang relevan berkaitan erat dengan risiko kecanduan berdasarkan referensi ilmiah yang ditemukan dari hasil pencarian sebelumnya.
+    3.  Tentukan 3 rekomendasi aplikatif yang relevan
     
     **ATURAN OUTPUT:**
+    - Selalu Greetings user dan jelaskan maksud dan tujuan skrining beserta ringkasan skor user
+    - Analisis selalu bersifat spesifik dan berbasis bukti serta terpersonalisasi bagi user
     - Jelaskan temuan Anda dengan bahasa Indonesia formal & empatik.
     - **PENTING:** JANGAN menulis daftar pustaka atau URL manual di bawah teks. Cukup tulis narasi analisisnya. 
     """
