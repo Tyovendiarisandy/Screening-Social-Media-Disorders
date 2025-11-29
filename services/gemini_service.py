@@ -14,7 +14,7 @@ def get_gemini_client():
 
 def analyze_response(profile_data, responses):
     """
-    Analisis dengan Thinking Mode + Inline Citations Only (Tanpa Footer Referensi).
+    Analisis dengan Thinking Mode + Inline Citations Only.
     """
     client = get_gemini_client()
     if not client:
@@ -22,12 +22,12 @@ def analyze_response(profile_data, responses):
         
     total_score = sum(responses.values())
     
-    # Prompt
+    # Prompt Definition
     prompt = f"""
-    Anda adalah **Psikolog Klinis & Peneliti Akademik** yang memiliki spesialisasi dalam kasus Social Media Disorder.
+    Anda adalah **Psikolog Klinis & Peneliti Akademik** yang memiliki spesialisasi tinggi dalam menganalisis kasus Social Media Disorder.
     
     **TUGAS:**
-    Analisis hasil skrining user berdasarkan hasil skrining menggunakan "Social Media Disorder Scale (SMDS-27)".
+    Analisis hasil skrining user berdasarkan hasil skrining "Social Media Disorder Scale (SMDS-27)".
     
     **DATA USER:**
     - Nama/Alias: {profile_data.get('alias')}
@@ -35,25 +35,27 @@ def analyze_response(profile_data, responses):
     - Usia: {profile_data.get('age')}
     - SKOR TOTAL: {total_score} (Range: 27-135)
     
+    **JAWABAN USER:**
+    {responses}
+    
     **INSTRUKSI BERPIKIR (CHAIN OF THOUGHT):**
     1.  Cari literatur terbaru tentang cutoff score SMDS-27 lewat Google Search.
-    2.  Analisis korelasi antara faktor pekerjaan '{profile_data.get('occupation')}' dan lain-lain yang relevan dengan risiko kecanduan.
+    2.  Analisis korelasi antara faktor pekerjaan '{profile_data.get('occupation')}' dengan risiko kecanduan yang dikaitkan dengan faktor lain yang relevan dari hasil studi literatur.
     3.  Tentukan 3 rekomendasi taktis.
     
     **ATURAN OUTPUT:**
+    - Selalu lakukan greeting pada user setelah user selesai melakukan skrining dan ingin melihat hasilnya
     - Jelaskan temuan Anda dengan bahasa Indonesia formal & empatik.
-    - **PENTING:** JANGAN menulis daftar pustaka atau URL manual. Cukup tulis narasi analisisnya. Sistem akan otomatis membuat teks Anda menjadi link yang bisa diklik.
+    - **PENTING:** JANGAN menulis daftar pustaka atau URL manual di bawah teks. Cukup tulis narasi analisisnya. 
     """
     
-     try:
+    try:
         tools = [types.Tool(google_search=types.GoogleSearch())]
         
         config = types.GenerateContentConfig(
             tools=tools,
             temperature=0.2,
             media_resolution="MEDIA_RESOLUTION_HIGH",
-            
-            # Thinking Mode aktif
             thinking_config=types.ThinkingConfig(
                 thinking_budget=-1, 
                 include_thoughts=False 
@@ -78,8 +80,7 @@ def analyze_response(profile_data, responses):
 
 def inject_citations_and_format(response):
     """
-    Hanya menyuntikkan link ke dalam paragraf (Inline).
-    Tidak lagi membuat daftar pustaka di bawah.
+    Menyuntikkan link ke dalam paragraf (Inline).
     """
     text = response.text
     
@@ -94,14 +95,13 @@ def inject_citations_and_format(response):
         return text 
 
     metadata = candidate.grounding_metadata
-    chunks = metadata.grounding_chunks # Sumber (Web URL)
-    supports = metadata.grounding_supports # Pemetaan (Kalimat -> Sumber)
+    chunks = metadata.grounding_chunks 
+    supports = metadata.grounding_supports 
     
     if not chunks or not supports:
         return text
 
-    # --- LANGKAH: INJEKSI SITASI INLINE ---
-    # Sortir dari belakang ke depan agar indeks karakter tidak bergeser
+    # Sortir dari belakang ke depan
     sorted_supports = sorted(supports, key=lambda s: s.segment.end_index, reverse=True)
     
     for support in sorted_supports:
@@ -111,15 +111,14 @@ def inject_citations_and_format(response):
             if idx < len(chunks):
                 chunk = chunks[idx]
                 if hasattr(chunk, 'web') and hasattr(chunk.web, 'uri'):
-                    # Format: **[[Sumber]](URL)**
-                    # Teks "Sumber" atau Angka akan menjadi Hyperlink langsung
-                    citation_mark = f" **[[Sumber]]( {chunk.web.uri} )**"
+                    # Format sitasi inline
+                    citation_mark = f" **[[Sumber]]({chunk.web.uri})**"
                     
                     insert_pos = support.segment.end_index
-                    # Sisipkan link ke dalam teks asli
+                    # Sisipkan link
                     text = text[:insert_pos] + citation_mark + text[insert_pos:]
 
-    # --- Disclaimer Tetap Ada (Penting untuk Safety) ---
+    # Disclaimer
     disclaimer = """
     \n\n---
     *Disclaimer: Analisis ini dihasilkan oleh AI (Gemini) dengan verifikasi data via Google Search. Klik pada label **[[Sumber]]** di dalam teks untuk membaca artikel aslinya.*
