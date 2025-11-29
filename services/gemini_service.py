@@ -5,6 +5,7 @@ import re
 
 def get_gemini_client():
     try:
+        # Pastikan API Key ada di .streamlit/secrets.toml
         api_key = st.secrets["gemini"]["api_key"]
         client = genai.Client(api_key=api_key)
         return client
@@ -12,90 +13,102 @@ def get_gemini_client():
         st.error(f"Error configuring Gemini: {e}")
         return None
 
-def analyze_response_scientific(profile_data, responses):
+def analyze_response(profile_data, responses):
+    """
+    Menganalisis hasil skrining menggunakan Gemini 2.5 Flash
+    dengan fitur Thinking (CoT) maksimal dan Grounding Google Search.
+    """
     client = get_gemini_client()
     if not client:
-        return "Error: Gemini not configured."
+        return "Error: Konfigurasi Gemini gagal."
         
     total_score = sum(responses.values())
     
-    # --- 1. PROMPT ENGINEERING: SCIENTIFIC CHAIN OF THOUGHT ---
+    # Prompt dirancang untuk memicu Deep Reasoning sebelum menjawab
     prompt = f"""
-    Anda adalah sistem AI pendukung keputusan klinis (Clinical Decision Support System).
-    Tugas: Analisis risiko Social Media Disorder (SMDS-27).
+    Anda adalah **Psikolog Klinis Senior & Peneliti Cyberpsychology yang sangat ahli dalam menganalisis kasus kecanduan media sosial**.
+    
+    **TUGAS:**
+    Lakukan analisis mendalam terhadap hasil skrining "Social Media Disorder Scale (SMDS-27)".
     
     **PROFIL SUBJEK:**
+    - Nama/Alias: {profile_data.get('alias')}
     - Pekerjaan: {profile_data.get('occupation')}
     - Usia: {profile_data.get('age')}
-    - Skor Total: {total_score} (Range 27-135)
+    - Skor Total: {total_score} (Range: 27-135)
     
-    **DATA RESPON:**
+    **RESPON PER ITEM:**
     {responses}
 
-    **PROTOKOL ANALISIS (WAJIB DIPATUHI):**
+    **INSTRUKSI BERPIKIR (CHAIN OF THOUGHT):**
+    Gunakan kapabilitas berpikir Anda untuk:
+    1.  Mencari standar *cutoff* klinis terbaru untuk SMDS-27 lewat Google Search.
+    2.  Mengevaluasi korelasi spesifik antara pekerjaan '{profile_data.get('occupation')}' dengan risiko kecanduan digital.
+    3.  Memverifikasi validitas jurnal yang ditemukan sebelum mengutipnya.
     
-    1.  **FASE BERPIKIR (INTERNAL THOUGHT PROCESS):**
-        -   Lakukan pencarian Google Search untuk standar *cutoff score* SMDS-27 terbaru.
-        -   Cari studi kasus spesifik mengenai dampak media sosial pada demografi "{profile_data.get('occupation')}" usia {profile_data.get('age')}.
-        -   Verifikasi apakah skor {total_score} termasuk kategori 'Berisiko', 'Bermasalah', atau 'Kecanduan'.
-    
-    2.  **FASE OUTPUT PUBLIK:**
-        -   Sajikan analisis dalam Bahasa Indonesia formal dan empatik.
-        -   Setiap klaim diagnosis atau saran MENTAL HEALTH harus memiliki sitasi inline.
-        -   **Saran:** Berikan 3 intervensi berbasis bukti (CBT, Mindfulness, atau Digital Hygiene) yang relevan dengan pekerjaan subjek.
-    
-    **ATURAN REFERENSI KETAT:**
-    -   HANYA gunakan fakta yang ditemukan dari tool Google Search. JANGAN gunakan pengetahuan internal jika bertentangan dengan hasil pencarian.
-    -   Jika tidak menemukan jurnal spesifik untuk pekerjaan ini, katakan "Belum ada studi spesifik untuk profesi ini, namun berdasarkan studi umum..." (Jujur lebih baik daripada halusinasi).
+    **OUTPUT FINAL (UNTUK USER):**
+    -   **Analisis Klinis:** Jelaskan arti skor secara ilmiah.
+    -   **Dampak Spesifik:** Bagaimana skor ini mempengaruhi kinerja {profile_data.get('occupation')}.
+    -   **Rekomendasi:** 3 langkah taktis dan terukur.
+    -   **Validasi:** Pastikan semua klaim medis memiliki rujukan.
     """
     
     try:
-        # --- 2. CONFIG: MENGAKTIFKAN LOGIKA BERPIKIR & GROUNDING ---
+        # 1. Konfigurasi Tools (Google Search)
         tools = [types.Tool(google_search=types.GoogleSearch())]
         
+        # 2. System Instruction (Memperkuat Persona)
+        sys_instruct = "Anda adalah AI Clinical Decision Support System yang mengutamakan Evidence-Based Practice."
+
+        # 3. KONFIGURASI POWERFUL (Thinking + High Res)
         config = types.GenerateContentConfig(
             tools=tools,
-            temperature=0.2, # SANGAT RENDAH agar tidak kreatif/mengarang (fokus fakta)
+            system_instruction=sys_instruct,
+            temperature=0.2, # Rendah agar fokus pada fakta, bukan kreatifitas
             
-            # FITUR KUNCI: THINKING BUDGET
-            # Memberikan alokasi token bagi model untuk "berpikir" sebelum menjawab.
-            # Ini secara teknis memaksa CoT (Chain of Thought).
+            # FITUR THINKING (CoT)
             thinking_config=types.ThinkingConfig(
-                thinking_budget=2048, 
-                include_thoughts=False # Kita tidak perlu melihat prosesnya, hanya hasilnya
+                thinking_budget=-1, # -1 = Unlimited/Auto budget untuk berpikir maksimal
+                include_thoughts=False # False = Kita hanya ingin hasil akhirnya, proses berpikir di backend
             ),
             
-            # Memastikan format teks
+            # RESOLUSI TINGGI
+            media_resolution="MEDIA_RESOLUTION_HIGH",
+            
             response_modalities=["TEXT"]
         )
         
-        with st.spinner('Sedang melakukan validasi silang dengan database jurnal ilmiah...'):
-            response = client.models.generate_content(
-                model="gemini-2.5-flash", 
-                contents=prompt,
-                config=config,
-            )
+        # 4. Eksekusi Model
+        # Pastikan menggunakan nama model yang tepat.
+        response = client.models.generate_content(
+            model="gemini-2.5-flash", 
+            contents=prompt,
+            config=config,
+        )
         
-        # --- 3. POST-PROCESSING: SAFETY & LINK CLEANING ---
-        final_output = process_and_validate_output(response)
-        return final_output
+        # 5. Post-Processing (Pembersihan Link 404 & Formatting)
+        return process_and_validate_output(response)
 
     except Exception as e:
-        return f"Terjadi kesalahan teknis: {e}"
+        # Fallback error handling yang informatif
+        return f"""
+        **Terjadi Kesalahan Teknis:**
+        {str(e)}
+        
+        *Saran: Jika error berkaitan dengan 'ThinkingConfig' atau '400', kemungkinan model 'gemini-2.5-flash' di akun Anda belum mendukung fitur Thinking secara penuh. Coba hapus parameter thinking_config atau ganti model ke varian eksperimental.*
+        """
 
 def process_and_validate_output(response):
     """
-    Fungsi ini menjamin:
-    1. Tidak ada link 404 (Redirect Google).
-    2. Referensi yang ditampilkan benar-benar berasal dari Google Search (Grounding).
+    Membersihkan link redirect Google dan menyusun referensi valid.
     """
     text = response.text
     
-    # Hapus link markdown yang rusak di dalam teks (Regex cleaning)
-    # Ini menghapus bagian (url) tapi menyisakan [Judul]
+    # Hapus link markdown yang mengandung google redirect (Penyebab Error 404)
+    # Mengubah [Teks](https://google.com/redirect...) menjadi **Teks**
     text = re.sub(r'\[(.*?)\]\(https?:\/\/.*?google\.com\/grounding-api-redirect.*?\)', r'**\1**', text)
     
-    # Ambil Metadata Grounding yang Valid
+    # Ambil Metadata Grounding yang Valid dari Response Object
     valid_sources = []
     if hasattr(response, 'candidates') and response.candidates:
         candidate = response.candidates[0]
@@ -107,27 +120,21 @@ def process_and_validate_output(response):
                         uri = chunk.web.uri
                         title = chunk.web.title
                         
-                        # Filter URL sampah/internal
+                        # Filter URL sampah
                         if "grounding-api-redirect" not in uri and "google.com" not in uri:
                             valid_sources.append((title, uri))
 
-    # --- SAFETY DISCLAIMER (WAJIB UNTUK APLIKASI KESEHATAN) ---
-    disclaimer = """
-    ---
-    **⚠️ PEMBERITAHUAN PENTING:**
-    *Analisis ini dihasilkan oleh kecerdasan buatan (AI) berdasarkan literatur ilmiah yang tersedia secara publik. Hasil ini **bukan diagnosis medis**. Jika Anda merasa tertekan atau mengalami gangguan fungsi hidup sehari-hari, segera hubungi profesional kesehatan mental (Psikolog/Psikiater).*
-    """
+    # Tambahkan Disclaimer
+    disclaimer = "\n\n---\n*Disclaimer: Analisis ini dibantu oleh AI dengan referensi jurnal daring. Bukan pengganti diagnosis medis profesional.*"
 
-    # --- PENYUSUNAN REFERENSI ---
+    # Susun Bagian Referensi
     if valid_sources:
-        refs = "\n\n### 📖 Referensi Ilmiah Pendukung (Diverifikasi)\n"
-        # Gunakan set untuk menghapus duplikat, lalu list lagi
-        unique_sources = list(set(valid_sources)) 
+        refs = "\n\n### 📚 Referensi Ilmiah Terverifikasi\n"
+        unique_sources = list(set(valid_sources))
         
         for i, (title, uri) in enumerate(unique_sources, 1):
             refs += f"{i}. [{title}]({uri})\n"
         
         return text + refs + disclaimer
     else:
-        # Jika Google Search gagal menemukan sumber valid
-        return text + "\n\n*Catatan: Sumber spesifik tidak dapat diverifikasi saat ini.*" + disclaimer
+        return text + disclaimer
