@@ -98,9 +98,9 @@ Anda tidak boleh memberikan saran yang mengarah kepada tindakan kriminal atau me
             media_resolution="MEDIA_RESOLUTION_HIGH"
         )
         
-        # Using gemini-2.0-flash-exp as the stable preview model for this SDK
+        # Using gemini-2.5-flash as the stable preview model for this SDK
         response = client.models.generate_content(
-            model="gemini-2.0-flash-exp", 
+            model="gemini-2.5-flash", 
             contents=prompt,
             config=config,
         )
