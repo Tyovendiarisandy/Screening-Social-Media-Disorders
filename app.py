@@ -14,7 +14,7 @@ def main():
     # --- 1. TAMPILKAN GAMBAR ILUSTRASI ---
     # Pastikan file 'icon.jpg' ada di satu folder dengan app.py
     try:
-        st.image("icon.jpg", use_container_width=True, caption="Ilustrasi: Tantangan di Era Digital")
+        st.image("icon.jpg", use_container_width=True)
     except Exception:
         # Fallback jika gambar lupa diupload/tidak ada
         st.warning("⚠️ File 'icon.jpg' tidak ditemukan di folder aplikasi.")
