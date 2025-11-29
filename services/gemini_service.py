@@ -130,7 +130,6 @@ def inject_citations_and_format(response):
                     text = text[:insert_pos] + citation_mark + text[insert_pos:]
 
     # --- LANGKAH 2: FOOTER DAFTAR PUSTAKA ---
-    footer = "\n\n---\n### 📚 Referensi & Sumber Bacaan\n"
     unique_sources = {}
     
     for i, chunk in enumerate(chunks):
