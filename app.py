@@ -83,7 +83,7 @@ def render_questionnaire():
         # Tolerance
         "4. Apakah Anda merasa perlu menggunakan media sosial lebih sering dari sebelumnya?",
         "5. Apakah Anda merasa perlu menghabiskan waktu lebih lama di media sosial untuk merasa puas?",
-        "6. Apakah Anda merasa bahwa waktu yang kamu habiskan di media sosial saat ini terasa kurang cukup?",
+        "6. Apakah Anda merasa bahwa waktu yang Anda habiskan di media sosial saat ini terasa kurang cukup?",
         # Withdrawal
         "7. Apakah Anda merasa gelisah atau stres jika tidak bisa menggunakan media sosial?",
         "8. Apakah Anda menjadi mudah marah atau tersinggung ketika dilarang atau tidak bisa mengakses media sosial?",
