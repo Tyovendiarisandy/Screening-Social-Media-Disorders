@@ -50,7 +50,7 @@ def analyze_response(profile_data, responses):
     """
     
     try:
-        tools = [types.Tool(google_search=types.GoogleSearch())]
+        tools = [types.Tool(google_search=types.GoogleSearch(mode="ANY"))]
         
         config = types.GenerateContentConfig(
             tools=tools,
