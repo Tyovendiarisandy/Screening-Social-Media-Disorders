@@ -121,7 +121,7 @@ def inject_citations_and_format(response):
     # Disclaimer
     disclaimer = """
     \n\n---
-    *Disclaimer: Analisis ini dihasilkan oleh AI (Gemini) dengan verifikasi data via Google Search. Klik pada label **[[Sumber]]** di dalam teks untuk membaca artikel aslinya.*
+    *Disclaimer: Analisis ini dihasilkan oleh AI (Gemini) dengan verifikasi data via Google Search. Klik pada label [Sumber] di dalam teks untuk membaca artikel aslinya.*
     """
     
     return text + disclaimer
