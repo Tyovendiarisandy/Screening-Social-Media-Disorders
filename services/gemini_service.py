@@ -45,7 +45,7 @@ def analyze_response(profile_data, responses):
     - **PENTING:** JANGAN menulis daftar pustaka atau URL manual. Cukup tulis narasi analisisnya. Sistem akan otomatis membuat teks Anda menjadi link yang bisa diklik.
     """
     
- try:
+     try:
         tools = [types.Tool(google_search=types.GoogleSearch())]
         
         config = types.GenerateContentConfig(
